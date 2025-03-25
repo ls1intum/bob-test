@@ -1,7 +1,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "init.name" -}}
+{{- define "bob.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
@@ -10,7 +10,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "init.fullname" -}}
+{{- define "bob.fullname" -}}
 {{- if .Values.fullnameOverride }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -26,16 +26,16 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "init.chart" -}}
+{{- define "bob.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
 Common labels
 */}}
-{{- define "init.labels" -}}
-helm.sh/chart: {{ include "init.chart" . }}
-{{ include "init.selectorLabels" . }}
+{{- define "bob.labels" -}}
+helm.sh/chart: {{ include "bob.chart" . }}
+{{ include "bob.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -45,17 +45,17 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 Selector labels
 */}}
-{{- define "init.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "init.name" . }}
+{{- define "bob.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "bob.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "init.serviceAccountName" -}}
+{{- define "bob.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "init.fullname" .) .Values.serviceAccount.name }}
+{{- default (include "bob.fullname" .) .Values.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
