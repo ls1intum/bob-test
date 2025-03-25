@@ -12,8 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     steps: 
       - name: List files in the repository
-        run: ls ${{ env.GITHUB_WORKSPACE }}
+        run: ls $GITHUB_WORKSPACE
       - name: Push Chart
+        working-directory: ${{ env.GITHUB_WORKSPACE }}
         uses: appany/helm-oci-chart-releaser@v0.3.0
         with:
           skip-existing: true
