@@ -11,6 +11,8 @@ jobs:
       #url: https://pr-${{ github.event.pull_request.number }}.${{ vars.PROJECT_NAME }}.k8s.ase.cit.tum.de
     runs-on: ubuntu-latest
     steps: 
+      - name: List files in the repository
+        run: ls ${{ env.GITHUB_WORKSPACE }}
       - name: Push Chart
         uses: appany/helm-oci-chart-releaser@v0.3.0
         with:
