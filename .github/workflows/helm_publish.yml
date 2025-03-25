@@ -1,0 +1,24 @@
+name: Publish Helm chart
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled]
+
+jobs:
+  publish:
+    environment: 
+      name: k8s-test
+    runs-on: ubuntu-latest
+    steps: 
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Push Chart
+        uses: appany/helm-oci-chart-releaser@v0.4.2
+        with:
+          name: ${{ vars.PROJECT_NAME }}
+          repository: ${{ github.repository_owner }}/helm
+          tag: 0.0.0-pr${{ github.event.pull_request.number }}
+          path: helm/${{ vars.PROJECT_NAME }}
+          registry: ghcr.io
+          registry_username: ${{ github.repository_owner }}
+          registry_password: ${{ secrets.GITHUB_TOKEN }}

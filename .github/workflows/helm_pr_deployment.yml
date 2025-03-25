@@ -1,0 +1,88 @@
+name: Deploy PR to Kubernetes
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled]
+
+jobs:
+  deploy:
+    if: ${{ github.event.pull_request.head.repo.owner.name == 'ls1intum' || contains(github.event.pull_request.labels.*.name, 'deploy:k8s') }}
+    runs-on: ubuntu-latest
+    environment:
+      name: k8s-test
+      url: https://pr-${{ github.event.pull_request.number }}.${{ vars.PROJECT_NAME }}.k8s.ase.cit.tum.de
+    concurrency:
+      group: k8s-pr-${{ github.event.pull_request.number }}-${{ vars.PROJECT_NAME }}
+      cancel-in-progress: true
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: v3.15.0
+
+      - name: Setup Kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: v1.30.1
+
+      - name: Authenticate to Kubernetes cluster
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBECONFIG }}" > "$HOME/.kube/config"
+
+      - name: Get branch name
+        id: branch
+        run: echo "BRANCH_NAME=\"${GITHUB_REF#refs/heads/}\"" >> "$GITHUB_ENV"
+
+      - name: Determine tag
+        id: determine-tag
+        run: echo "SEM_VERSION=0.0.0-pr-${{ github.event.pull_request.number }}" >> "$GITHUB_ENV"
+
+      - name: Set Project Url
+        id: project-url
+        run: echo "PROJECT_URL=pr-${{ github.event.pull_request.number }}.${{ vars.PROJECT_NAME }}.k8s.ase.cit.tum.de" >> "$GITHUB_ENV"
+
+      - name: Update chart dependencies
+        run: helm dependency update helm/${{ vars.PROJECT_NAME }}
+
+      - name: Deploy Helm chart
+        run: |
+          helm upgrade --install ${{ vars.PROJECT_NAME }} \
+            oci://ghcr.io/${{ github.repository_owner }}/helm/${{ vars.PROJECT_NAME }} --version ${{ env.SEM_VERSION }} \
+            --namespace ${{ vars.PROJECT_NAME }}-pr-${{ github.event.pull_request.number }} --create-namespace \
+            --set ingress.enabled=true \
+            --set ingress.className="" \
+            --set ingress.annotations.cert-manager\\.io/cluster-issuer="letsencrypt-prod" \
+            --set ingress.annotations.spec\\.ingressClassName=nginx \
+            --set-string ingress.annotations.kubernetes\\.io/tls-acme="true" \
+            --set-string ingress.annotations.nginx\\.ingress\\.kubernetes\\.io/ssl-redirect="true" \
+            --set ingress.hosts[0].host=${{ env.PROJECT_URL }} \
+            --set ingress.hosts[0].paths[0].path="/" \
+            --set ingress.hosts[0].paths[0].pathType=ImplementationSpecific \
+            --set ingress.tls[0].secretName=${{ vars.PROJECT_NAME }}-pr-${{ github.event.pull_request.number }}-tls \
+            --set ingress.tls[0].hosts[0]=${{ env.PROJECT_URL }} \
+            --set application.operator.name="Technical University of Munich" \
+            --set ${{ vars.PROJECT_NAME }}Version=${{ github.sha }} \
+            --timeout 15m \
+            --wait
+
+      - name: Post Deployment Comment
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const prNumber = context.issue.number;
+
+            github.rest.issues.createComment({
+              ...context.repo,
+              issue_number: prNumber,
+              body: `
+            :rocket: Deployed **PR #${prNumber}** to https://${{ env.PROJECT_URL }}
+
+            :hourglass_flowing_sand: It might take up to **10 minutes** to fully start up.
+              `
+            });
