@@ -15,7 +15,6 @@ jobs:
       - name: Push Chart
         uses: appany/helm-oci-chart-releaser@v0.4.2
         with:
-          skip-existing: true
           name: ${{ vars.PROJECT_NAME }}
           repository: ${{ github.repository_owner }}/helm
           tag: 11.0.11-pr${{ github.event.pull_request.number }}
