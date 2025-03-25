@@ -14,7 +14,7 @@ jobs:
       - name: List files in the repository
         run: ls $GITHUB_WORKSPACE
       - name: Push Chart
-        uses: appany/helm-oci-chart-releaser@latest
+        uses: appany/helm-oci-chart-releaser@0.4.2
         with:
           skip-existing: true
           name: ${{ vars.PROJECT_NAME }}
