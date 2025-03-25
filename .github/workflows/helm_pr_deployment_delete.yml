@@ -10,9 +10,9 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: k8s-test
-      url: https://pr-${{ github.event.pull_request.number }}.${{ env.PROJECT_NAME }}.k8s.ase.cit.tum.de
+      url: https://pr-${{ github.event.pull_request.number }}.${{ vars.PROJECT_NAME }}.k8s.ase.cit.tum.de
     concurrency:
-      group: k8s-pr-${{ github.event.pull_request.number }}-${{ env.PROJECT_NAME }}
+      group: k8s-pr-${{ github.event.pull_request.number }}-${{ vars.PROJECT_NAME }}
       cancel-in-progress: true
 
     steps:
@@ -33,8 +33,8 @@ jobs:
 
       - name: Delete Helm release
         run: |
-          helm uninstall ${{ env.PROJECT_NAME }} --namespace ${{ env.PROJECT_NAME }}-pr-${{ github.event.pull_request.number }}
+          helm uninstall ${{ vars.PROJECT_NAME }} --namespace ${{ vars.PROJECT_NAME }}-pr-${{ github.event.pull_request.number }}
 
       - name: Delete Kubernetes namespace
         run: |
-          kubectl delete namespace ${{ env.PROJECT_NAME }}-pr-${{ github.event.pull_request.number }}
+          kubectl delete namespace ${{ vars.PROJECT_NAME }}-pr-${{ github.event.pull_request.number }}

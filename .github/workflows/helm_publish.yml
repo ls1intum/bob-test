@@ -8,16 +8,16 @@ jobs:
   publish:
     environment: 
       name: k8s-test
-      url: https://pr-${{ github.event.pull_request.number }}.${{ env.PROJECT_NAME }}.k8s.ase.cit.tum.de
+      url: https://pr-${{ github.event.pull_request.number }}.${{ vars.PROJECT_NAME }}.k8s.ase.cit.tum.de
     runs-on: ubuntu-latest
     steps: 
       - name: Push Chart
         uses: appany/helm-oci-chart-releaser@v0.3.0
         with:
-          name: ${{ env.PROJECT_NAME }}
+          name: ${{ vars.PROJECT_NAME }}
           repository: ${{ github.repository_owner }}/helm
           tag: 11.0.11-pr${{ github.event.pull_request.number }}
-          path: helm/${{ env.PROJECT_NAME }}
+          path: helm/${{ vars.PROJECT_NAME }}
           registry: ghcr.io
           registry_username: ${{ github.repository_owner }}
           registry_password: ${{ secrets.GITHUB_TOKEN }}
