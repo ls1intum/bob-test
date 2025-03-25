@@ -14,7 +14,6 @@ jobs:
       - name: List files in the repository
         run: ls $GITHUB_WORKSPACE
       - name: Push Chart
-        working-directory: ${{ env.GITHUB_WORKSPACE }}
         uses: appany/helm-oci-chart-releaser@v0.3.0
         with:
           skip-existing: true
@@ -26,3 +25,4 @@ jobs:
           registry_username: ${{ github.repository_owner }}
           registry_password: ${{ secrets.GITHUB_TOKEN }}
           #update_dependencies: 'true'
+        working-directory: ${{ env.GITHUB_WORKSPACE }}
