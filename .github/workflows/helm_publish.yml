@@ -17,7 +17,7 @@ jobs:
         with:
           name: ${{ vars.PROJECT_NAME }}
           repository: ${{ github.repository_owner }}/helm
-          tag: 11.0.11-pr${{ github.event.pull_request.number }}
+          tag: 0.0.0-pr${{ github.event.pull_request.number }}
           path: helm/${{ vars.PROJECT_NAME }}
           registry: ghcr.io
           registry_username: ${{ github.repository_owner }}
