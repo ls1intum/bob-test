@@ -9,7 +9,7 @@ jobs:
     if: ${{ github.event.pull_request.head.repo.owner.name == 'ls1intum' && contains(github.event.pull_request.labels.*.name, 'deploy:k8s') }}
     runs-on: ubuntu-latest
     environment:
-      name: k8s
+      name: k8s-test
       url: https://pr-${{ github.event.pull_request.number }}.${{ env.PROJECT_NAME }}.k8s.ase.cit.tum.de
     concurrency:
       group: k8s-pr-${{ github.event.pull_request.number }}-${{ env.PROJECT_NAME }}
