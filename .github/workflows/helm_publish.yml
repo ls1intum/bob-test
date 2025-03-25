@@ -11,10 +11,10 @@ jobs:
       - name: Push Chart
         uses: appany/helm-oci-chart-releaser@v0.3.0
         with:
-          name: ${{ github.event.repository.name }}
+          name: ${{ env.PROJECT_NAME }}
           repository: ${{ github.repository_owner }}/helm
           tag: 11.0.11-pr${{ github.event.pull_request.number }}
-          path: helm/${{ github.event.repository.name }}
+          path: helm/${{ env.PROJECT_NAME }}
           registry: ghcr.io
           registry_username: ${{ github.repository_owner }}
           registry_password: ${{ secrets.GITHUB_TOKEN }}

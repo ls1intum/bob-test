@@ -10,9 +10,9 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: k8s
-      url: https://pr-${{ github.event.pull_request.number }}.${{ github.event.repository.name }}.k8s.ase.cit.tum.de
+      url: https://pr-${{ github.event.pull_request.number }}.${{ env.PROJECT_NAME }}.k8s.ase.cit.tum.de
     concurrency:
-      group: k8s-pr-${{ github.event.pull_request.number }}-${{ github.event.repository.name }}
+      group: k8s-pr-${{ github.event.pull_request.number }}-${{ env.PROJECT_NAME }}
       cancel-in-progress: true
 
     steps:
@@ -30,10 +30,6 @@ jobs:
         run: |
           mkdir -p $HOME/.kube
           echo "${{ secrets.KUBECONFIG }}" > "$HOME/.kube/config"
-
-      - name: Set Project Name
-        id: project-name
-        run: echo "PROJECT_NAME=${{ github.event.repository.name }}" >> "$GITHUB_ENV"
 
       - name: Delete Helm release
         run: |
