@@ -14,6 +14,7 @@ jobs:
       - name: Push Chart
         uses: appany/helm-oci-chart-releaser@v0.3.0
         with:
+          skip-existing: true
           name: ${{ vars.PROJECT_NAME }}
           repository: ${{ github.repository_owner }}/helm
           tag: 11.0.11-pr${{ github.event.pull_request.number }}
@@ -21,4 +22,4 @@ jobs:
           registry: ghcr.io
           registry_username: ${{ github.repository_owner }}
           registry_password: ${{ secrets.GITHUB_TOKEN }}
-          update_dependencies: 'true'
+          #update_dependencies: 'true'
