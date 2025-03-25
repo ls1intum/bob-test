@@ -54,6 +54,7 @@ jobs:
           helm upgrade --install ${{ vars.PROJECT_NAME }} \
             oci://ghcr.io/${{ github.repository_owner }}/helm/${{ vars.PROJECT_NAME }} --version ${{ env.SEM_VERSION }} \
             --namespace ${{ vars.PROJECT_NAME }}-pr-${{ github.event.pull_request.number }} --create-namespace \
+            --set ingress.enabled=true \
             --set ingress.className="" \
             --set ingress.annotations.cert-manager\\.io/cluster-issuer="letsencrypt-prod" \
             --set ingress.annotations.spec\\.ingressClassName=nginx \
