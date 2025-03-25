@@ -51,7 +51,6 @@ jobs:
 
       - name: Deploy Helm chart
         run: |
-          export KUBECONFIG=${{ secrets.KUBECONFIG }} && \
           helm upgrade --install ${{ vars.PROJECT_NAME }} \
             oci://ghcr.io/${{ github.repository_owner }}/helm/${{ vars.PROJECT_NAME }} --version ${{ env.SEM_VERSION }} \
             --namespace ${{ vars.PROJECT_NAME }}-pr-${{ github.event.pull_request.number }} --create-namespace \
