@@ -1,0 +1,44 @@
+name: Cleanup PR Deployment from Kubernetes
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  destroy:
+    if: ${{ github.event.pull_request.head.repo.owner.name == 'ls1intum' && contains(github.event.pull_request.labels.*.name, 'deploy:k8s') }}
+    runs-on: ubuntu-latest
+    environment:
+      name: k8s
+      url: https://pr-${{ github.event.pull_request.number }}.${{ github.event.repository.name }}.k8s.ase.cit.tum.de
+    concurrency:
+      group: k8s-pr-${{ github.event.pull_request.number }}-${{ github.event.repository.name }}
+      cancel-in-progress: true
+
+    steps:
+      - name: Setup Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: v3.15.0
+
+      - name: Setup Kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: v1.30.1
+
+      - name: Authenticate to Kubernetes cluster
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBECONFIG }}" > "$HOME/.kube/config"
+
+      - name: Set Project Name
+        id: project-name
+        run: echo "PROJECT_NAME=${{ github.event.repository.name }}" >> "$GITHUB_ENV"
+
+      - name: Delete Helm release
+        run: |
+          helm uninstall ${{ env.PROJECT_NAME }} --namespace ${{ env.PROJECT_NAME }}-pr-${{ github.event.pull_request.number }}
+
+      - name: Delete Kubernetes namespace
+        run: |
+          kubectl delete namespace ${{ env.PROJECT_NAME }}-pr-${{ github.event.pull_request.number }}
