@@ -8,11 +8,10 @@ jobs:
   publish:
     environment: 
       name: k8s-test
-      #url: https://pr-${{ github.event.pull_request.number }}.${{ vars.PROJECT_NAME }}.k8s.ase.cit.tum.de
     runs-on: ubuntu-latest
     steps: 
-      - name: List files in the repository
-        run: ls $GITHUB_WORKSPACE
+      - name: Checkout repository
+        uses: actions/checkout@v3
       - name: Push Chart
         uses: appany/helm-oci-chart-releaser@v0.4.2
         with:
@@ -24,4 +23,3 @@ jobs:
           registry: ghcr.io
           registry_username: ${{ github.repository_owner }}
           registry_password: ${{ secrets.GITHUB_TOKEN }}
-          #update_dependencies: 'true'
