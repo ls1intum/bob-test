@@ -8,7 +8,7 @@ jobs:
   publish:
     environment: 
       name: k8s-test
-      url: https://pr-${{ github.event.pull_request.number }}.${{ vars.PROJECT_NAME }}.k8s.ase.cit.tum.de
+      #url: https://pr-${{ github.event.pull_request.number }}.${{ vars.PROJECT_NAME }}.k8s.ase.cit.tum.de
     runs-on: ubuntu-latest
     steps: 
       - name: Push Chart
