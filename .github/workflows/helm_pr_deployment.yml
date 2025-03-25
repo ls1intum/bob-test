@@ -48,7 +48,19 @@ jobs:
 
       - name: Update chart dependencies
         run: helm dependency update helm/${{ vars.PROJECT_NAME }}
-
+      
+      - name: Push Chart
+        uses: appany/helm-oci-chart-releaser@v0.3.0
+        with:
+          name: ${{ vars.PROJECT_NAME }}
+          repository: ${{ github.repository_owner }}/helm
+          tag: ${{ env.SEM_VERSION }}
+          path: helm/${{ vars.PROJECT_NAME }}
+          registry: ghcr.io
+          registry_username: ${{ github.repository_owner }}
+          registry_password: ${{ secrets.GITHUB_TOKEN }}
+          update_dependencies: 'true'
+          
       - name: Deploy Helm chart
         run: |
           helm upgrade --install ${{ vars.PROJECT_NAME }} \
