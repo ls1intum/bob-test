@@ -6,7 +6,7 @@ on:
 
 jobs:
   deploy:
-    if: ${{ github.event.pull_request.head.repo.owner.name == 'ls1intum' && contains(github.event.pull_request.labels.*.name, 'deploy:k8s') }}
+    if: ${{ github.event.pull_request.head.repo.owner.name == 'ls1intum' || contains(github.event.pull_request.labels.*.name, 'deploy:k8s') }}
     runs-on: ubuntu-latest
     environment:
       name: k8s-test
@@ -60,7 +60,7 @@ jobs:
           registry_username: ${{ github.repository_owner }}
           registry_password: ${{ secrets.GITHUB_TOKEN }}
           update_dependencies: 'true'
-          
+
       - name: Deploy Helm chart
         run: |
           helm upgrade --install ${{ vars.PROJECT_NAME }} \
